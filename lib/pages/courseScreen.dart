@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:youlearn/assets/themeProvider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -61,7 +60,7 @@ class _CourseScreenState extends State<CourseScreen> {
       ),
       drawer: AppDrawer(widget._documentReference),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal:35),
+        padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.05),
         child: Column( 
           children: <Widget>[
             SizedBox(height:20),
@@ -119,7 +118,7 @@ class _CourseScreenState extends State<CourseScreen> {
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.9,
                         color: Theme.of(context).accentColor
-                      )
+                      ),
                     )
                   ),
                 ),
@@ -225,7 +224,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                         Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CategoryCoursesScreen(docReference,docSnapshot[index]["title"],widget._documentReference)));
                                       }, 
                                       child: Text(
-                                        "view all",
+                                        "View all",
                                         style: GoogleFonts.poppins(
                                           color: Theme.of(context).primaryColor,
                                           fontWeight: FontWeight.w400,
@@ -274,9 +273,8 @@ class _CourseScreenState extends State<CourseScreen> {
                                                           borderRadius: BorderRadius.circular(25)
                                                         ),
                                                         child: Container(
-                                                          padding: EdgeInsets.all(20),
+                                                          padding: EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 14),
                                                           width: cardWidth,
-                                                          // height: 150,
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.end,
                                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,8 +353,8 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                             Text(
                                                                               "Explore",
                                                                               style: GoogleFonts.roboto(
-                                                                                fontSize: 10,
-                                                                                fontWeight: FontWeight.w500,
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.w600,
                                                                                 color: Colors.white,
                                                                                 letterSpacing: 0.6
                                                                               ),
@@ -479,7 +477,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                           borderRadius: BorderRadius.circular(25)
                                         ),
                                         child: Container(
-                                          padding: EdgeInsets.all(20),
+                                          padding: EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 14),
                                           width: MediaQuery.of(context).size.width,
                                           height: 200,
                                           child: Column(
@@ -615,8 +613,8 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                 Text(
                                                                   "Explore",
                                                                   style: GoogleFonts.roboto(
-                                                                    fontSize: 10,
-                                                                    fontWeight: FontWeight.w500,
+                                                                    fontSize: 12,
+                                                                    fontWeight: FontWeight.w700,
                                                                     color: Colors.white,
                                                                     letterSpacing: 0.6
                                                                   ),
@@ -731,10 +729,8 @@ class _AppDrawerState extends State<AppDrawer> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   Future<void> signOut() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     googleSignIn.signOut();
     _auth.signOut();
-    prefs.setString('uid', null);
   }
 
   @override
@@ -809,7 +805,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
             ListTile(
               onTap: (){
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => CategoryScreen(widget.documentReference)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CategoryScreen(widget.documentReference)));
               },
               title: Text(
                 "Category",
@@ -852,6 +848,27 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
             ListTile(
+              title: Text(
+                "Dark Mode",
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 14,
+                  letterSpacing: 0.2,
+                  fontWeight: FontWeight.w400
+                )
+              ),
+              leading: Icon(
+                Icons.brightness_6,
+                color: Theme.of(context).primaryColor,
+              ),
+              trailing: Checkbox(
+                value: themeChange.darkTheme, 
+                onChanged: (bool value){
+                  themeChange.darkTheme = value;
+                }
+              ),
+            ),
+            ListTile(
               onTap: (){
                 signOut().then((value){
                   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyApp()));
@@ -875,30 +892,6 @@ class _AppDrawerState extends State<AppDrawer> {
                 color: Theme.of(context).primaryColor,
               ),
             ),
-            ListTile(
-              onTap: (){
-
-              },
-              title: Text(
-                "Dark Mode",
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: 14,
-                  letterSpacing: 0.2,
-                  fontWeight: FontWeight.w400
-                )
-              ),
-              leading: Icon(
-                Icons.brightness_6,
-                color: Theme.of(context).primaryColor,
-              ),
-              trailing: Checkbox(
-                value: themeChange.darkTheme, 
-                onChanged: (bool value){
-                  themeChange.darkTheme = value;
-                }
-              ),
-            )
           ],
         ),
       )

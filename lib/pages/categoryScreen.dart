@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'courseScreen.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -85,7 +86,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: CircularProgressIndicator(),
         )
       ) : Container(
-        padding: EdgeInsets.symmetric(horizontal: 30),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: FutureBuilder(
           future: dbRef.collection("Categories").getDocuments(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -123,7 +124,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           ), 
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                               padding: EdgeInsets.all(5),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,14 +145,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                   ),
                                   FittedBox(
                                     child: Container(
-                                      height: 113,
                                       width: MediaQuery.of(context).size.width - 250,
                                       padding: EdgeInsets.only(left:10,right:10, bottom: 10),
                                       alignment: Alignment.bottomLeft,
                                       child: Text(
                                         docSnap[index]["title"],
-                                        style: TextStyle(
-                                          fontSize: 17,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                           letterSpacing: 0.4

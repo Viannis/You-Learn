@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: loading ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[

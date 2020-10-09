@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../main.dart';
@@ -43,11 +41,6 @@ class _AuthScreenState extends State<AuthScreen> {
     return user;
   }
 
-  Future<void> setAuthState(String userUid) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('uid', userUid);
-  }
-
   Future<bool> checkCloudFirestore(String userUid) async{
     final snapShot = await dbRef.collection("Users").document(userUid).get();
     if(snapShot.exists && snapShot != null){
@@ -78,16 +71,16 @@ class _AuthScreenState extends State<AuthScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 30),
-                SvgPicture.asset(
-                  "./assets/images/Authlogo1.svg",
-                  height: 90
+                Image.asset(
+                  './assets/images/Authlogo.png',
+                  width: MediaQuery.of(context).size.width * 0.35,
+
                 ),
                 SizedBox(height: 30),
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(
+                    style: GoogleFonts.montserrat(
                       fontSize: 37,
-                      letterSpacing: -1,
                       fontWeight: FontWeight.w600
                     ),
                     children: <TextSpan>[
@@ -109,19 +102,19 @@ class _AuthScreenState extends State<AuthScreen> {
                 SizedBox(height: 55),
                 Text(
                   "Welcome",
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: GoogleFonts.poppins(
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF464646)
                   )
                 ),
                 SizedBox(height: 10),
                 Container(
-                  width: 250,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
                     "Signup or login to explore the courses offered",
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.7,
                       wordSpacing: 2,
@@ -134,13 +127,13 @@ class _AuthScreenState extends State<AuthScreen> {
                 Container(
                   width: 190,
                   child: RaisedButton(
-                    elevation: 4,
+                    elevation: 3,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        SvgPicture.asset(
-                          "./assets/images/GoogleLogo.svg",
-                          height: 20,
+                        Image.asset(
+                          './assets/images/GoogleIcon.png',
+                          height: 18
                         ),
                         Text(
                           "Sign in with Google",
@@ -158,23 +151,21 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     onPressed: (){
                       signInWithGoogle().then((user) {
-                        setAuthState(user.uid).then((nothing) {
-                          checkCloudFirestore(user.uid).then((cloudFirestoreState) {
-                            if(cloudFirestoreState){
+                        checkCloudFirestore(user.uid).then((cloudFirestoreState) {
+                          if(cloudFirestoreState){
+                            setState(() {
+                              loading = false;
+                            });
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                          } 
+                          else{
+                            updateUserData(user).then((nothing1) {
                               setState(() {
                                 loading = false;
                               });
                               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
-                            } 
-                            else{
-                              updateUserData(user).then((nothing1) {
-                                setState(() {
-                                  loading = false;
-                                });
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
-                              });
-                            }
-                          });
+                            });
+                          }
                         });
                       });
                     }
@@ -184,24 +175,23 @@ class _AuthScreenState extends State<AuthScreen> {
                 Text(
                   "or",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: Color(0xFF02B2FE)
                   )
                 ),
                 SizedBox(height: 15),
                 Container(
-                  width: 195,
+                  width: 190,
                   child: RaisedButton(
-                    elevation: 4,
+                    elevation: 3,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        SvgPicture.asset(
-                          "./assets/images/GoogleLogo.svg",
-                          height: 20,
+                        Image.asset(
+                          './assets/images/GoogleIcon.png',
+                          height: 18
                         ),
-                        
                         Text(
                           "Sign up with Google",
                           style: TextStyle(
@@ -218,23 +208,21 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     onPressed: (){
                       signInWithGoogle().then((user) {
-                        setAuthState(user.uid).then((nothing) {
-                          checkCloudFirestore(user.uid).then((cloudFirestoreState) {
-                            if(cloudFirestoreState){
+                        checkCloudFirestore(user.uid).then((cloudFirestoreState) {
+                          if(cloudFirestoreState){
+                            setState(() {
+                              loading = false;
+                            });
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                          } 
+                          else{
+                            updateUserData(user).then((nothing1) {
                               setState(() {
                                 loading = false;
                               });
                               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
-                            } 
-                            else{
-                              updateUserData(user).then((nothing1) {
-                                setState(() {
-                                  loading = false;
-                                });
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
-                              });
-                            }
-                          });
+                            });
+                          }
                         });
                       });
                     }

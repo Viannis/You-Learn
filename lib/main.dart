@@ -1,9 +1,12 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youlearn/assets/themeProvider.dart';
+import 'package:youlearn/pages/splashScreen.dart';
 import './pages/authScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import './pages/courseScreen.dart';
 import './pages/categoryScreen.dart';
 import 'package:flutter/services.dart';
@@ -24,33 +27,38 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Firestore dbRef = Firestore.instance;
   DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseUser user;
   bool signedIn = false;
   bool loading = true;
   String userUid;
 
   @override
-  void initState() {
-    checkAuthStatus().then((authState) {
-      setState(() {
-        signedIn = authState;
-        loading = false;
+  void initState() { 
+    Timer(Duration(seconds: 3), timeDelay); 
+    super.initState();
+  }
+
+  void timeDelay(){
+    checkAuthStatus().then((authState){
+      if (authState){
+        userUid = user.uid;
+      }
+      getCurrentAppTheme().then((value){
+        setState(() {
+          signedIn = authState;
+          loading = false;
+        });
       });
     });
-    super.initState();
-    getCurrentAppTheme();
   }
 
   Future<bool> checkAuthStatus() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userUid = prefs.getString('uid');
-    if (userUid == null || userUid == "" || userUid == "null") {
-      return false;
-    } else {
-      return true;
-    }
+    user = await auth.currentUser();
+    return user == null ? false : true;
   }
 
-  void getCurrentAppTheme() async{
+  Future<void> getCurrentAppTheme() async{
     themeChangeProvider.darkTheme = await themeChangeProvider.darkThemePreference.getTheme();
   }
 
@@ -66,11 +74,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: Styles.themeData(themeChangeProvider.darkTheme, context),
-            home: loading ? Scaffold(
-              body: Center(
-                child: CircularProgressIndicator()
-              )
-            ) : signedIn ? HomePage(dbRef.collection("Users").document(userUid)) : AuthScreen() 
+            home: loading ? SplashScreen() : signedIn ? HomePage(dbRef.collection("Users").document(userUid)) : AuthScreen() 
           );
         }
       ),

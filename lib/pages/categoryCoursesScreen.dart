@@ -39,7 +39,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
         centerTitle: true,
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal:35),
+        padding: EdgeInsets.symmetric(horizontal:20),
         child: Column(
           children: <Widget>[
             SizedBox(height: 20),
@@ -74,7 +74,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                         borderRadius: BorderRadius.circular(25)
                                       ),
                                       child: Container(
-                                        padding: EdgeInsets.all(20),
+                                        padding: EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 14),
                                         width: MediaQuery.of(context).size.width,
                                         height: 200,
                                         child: Column(
@@ -155,8 +155,8 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                                           Text(
                                                             "Explore",
                                                             style: GoogleFonts.roboto(
-                                                              fontSize: 10,
-                                                              fontWeight: FontWeight.w500,
+                                                              fontSize: 12,
+                                                              fontWeight: FontWeight.w700,
                                                               color: Colors.white,
                                                               letterSpacing: 0.6
                                                             ),

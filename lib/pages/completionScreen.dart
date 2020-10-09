@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CompletionScreen extends StatefulWidget {
@@ -32,10 +31,10 @@ class _CompletionScreenState extends State<CompletionScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 50),
-            SvgPicture.asset(
-              "./assets/images/congrats.svg",
-              width: MediaQuery.of(context).size.width,
-            ),
+            // SvgPicture.asset(
+            //   "./assets/images/congrats.svg",
+            //   width: MediaQuery.of(context).size.width,
+            // ),
             SizedBox(height: 30),
             Text(
               "Congratulations !",
