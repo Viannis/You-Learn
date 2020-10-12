@@ -234,10 +234,38 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
               }
             }
             else if(snapshot2.hasError){
-              return Center(
-                child: Text(
-                  "Oops Error Occured"
-                )
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(),
+                    Image.asset(
+                      './assets/images/Error.png',
+                      width: MediaQuery.of(context).size.width * 0.6
+                    ),
+                    SizedBox(),
+                    Text(
+                      "Oops!",
+                      style: GoogleFonts.poppins(
+                        fontSize: 35,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      'Some error occurred, Check your Internet and try again later',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 1,
+                        color: Theme.of(context).primaryColor
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(),
+                  ],
+                ),
               );
             }
             else{

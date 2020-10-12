@@ -314,7 +314,6 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                         ),
                         SizedBox(height: 10),
                       ],
-                      
                     );
                 }
               }

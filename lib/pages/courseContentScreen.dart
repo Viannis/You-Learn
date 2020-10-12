@@ -104,8 +104,29 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                 if(snap.hasData){
                   switch (snap.connectionState) {
                     case ConnectionState.waiting:
-                      return Center(
-                        child: CircularProgressIndicator()
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator()
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Loading...",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.w400
+                                ),
+                              ),
+                            ],
+                          )
+                        )
                       );
                       break;
                     default:

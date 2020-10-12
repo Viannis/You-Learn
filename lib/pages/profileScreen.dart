@@ -356,18 +356,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       height: 90,
                                       width: 90,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Colors.grey,
                                         borderRadius: BorderRadius.circular(50),
                                         border: Border.all(
                                           color: Theme.of(context).accentColor,
                                           width: 3
                                         ),
                                       ),
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          "https://lh3.googleusercontent.com/proxy/l9TsrUg0X7nwzOLJH-SCkpsK3of47HdGxrPgkF2nil85UdcocPSwIFZkGWJPmwsWmp3SgTwAedDIgmUFPfI8ky5j4BRW6-QwBbqT4UHdkGF46l5iinU",
-                                          fit: BoxFit.cover
-                                        )
+                                      child: Center(
+                                        child: Text(
+                                          'N',
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 22,
+                                            letterSpacing: 1,
+                                            color: Colors.white
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       )
                                     ),
                                     Positioned(
@@ -712,9 +718,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           }
                                         )
                                       )
-                                    : Center(
-                                      child: Text(
-                                        "No documents yet"
+                                    : Container(
+                                      height: MediaQuery.of(context).size.height * 0.4,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(),
+                                          Image.asset(
+                                            './assets/images/NoData.png',
+                                            width: MediaQuery.of(context).size.width * 0.35
+                                          ),
+                                          SizedBox(),
+                                          Text(
+                                            "You haven't enrolled in any courses",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              letterSpacing: 1,
+                                              color: Theme.of(context).primaryColor
+                                            ),
+                                          ),
+                                          SizedBox()
+                                        ],
                                       )
                                     );
                                   }
@@ -951,8 +977,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 }
                               }
                             )
-                          : Center(
-                              child: Text("No documents yet")
+                          : Container(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(),
+                                  Image.asset(
+                                    './assets/images/NoData.png',
+                                    width: MediaQuery.of(context).size.width * 0.35
+                                  ),
+                                  SizedBox(),
+                                  Text(
+                                    "You haven't completed any courses",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: 1,
+                                      color: Theme.of(context).primaryColor
+                                    ),
+                                  ),
+                                  SizedBox()
+                                ],
+                              )
                             )
                   ],
                 ),
