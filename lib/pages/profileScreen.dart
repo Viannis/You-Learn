@@ -74,7 +74,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         ),
       ),
-      body: loading ? Center(child: CircularProgressIndicator())
+      body: loading ? Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator()
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Loading...",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.w400
+                      ),
+                    ),
+                  ],
+                )
+              )
+            )
           : SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12),
@@ -84,12 +107,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 50),
                     StreamBuilder(
                       stream: widget.documentReference.snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      builder: (BuildContext context,AsyncSnapshot<DocumentSnapshot> snapshot) {
                         if (snapshot.hasData) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.waiting:
-                              return Center(child: CircularProgressIndicator());
+                              return Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator()
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Loading...",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.w400
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                )
+                              );
                               break;
                             case ConnectionState.active:
                               return Column(
@@ -152,15 +197,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         ),
                                                         onPressed: () async {
                                                           Navigator.of(context).pop();
-                                                          ImagePicker().getImage(source: ImageSource.gallery).then((value) async{
-                                                            value.readAsBytes().then((value1){
-                                                              getUrl(value1).then((value2) async{
-                                                                widget.documentReference.updateData({
-                                                                  'imageUrl' : value2
+                                                          try{
+                                                            ImagePicker().getImage(source: ImageSource.gallery).then((value) async{
+                                                              value.readAsBytes().then((value1){
+                                                                getUrl(value1).then((value2) async{
+                                                                  widget.documentReference.updateData({
+                                                                    'imageUrl' : value2
+                                                                  });
                                                                 });
                                                               });
                                                             });
-                                                          });
+                                                          } catch(e){
+                                                            print(e);
+                                                          }
+                                                          
                                                         },
                                                       )
                                                     ],

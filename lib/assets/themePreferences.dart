@@ -9,16 +9,22 @@ class DarkThemePreference {
 
   setDarkTheme(bool value) async{
     FirebaseUser user = await _auth.currentUser();
-    DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
-    await documentReference.updateData({
-      "darkTheme" : value
-    });
+    if(user != null){
+      DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
+      await documentReference.updateData({
+        "darkTheme" : value
+      });
+    }
   }
 
   Future<bool> getTheme() async {
     FirebaseUser user = await _auth.currentUser();
-    DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
-    bool darkTheme = await documentReference.get().then((value) => value.data["darkTheme"]);
-    return darkTheme ?? false;
+    if(user != null){
+      DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
+      bool darkTheme = await documentReference.get().then((value) => value.data["darkTheme"]);
+      return darkTheme ?? false;
+    } else {
+      return false;
+    }
   }
 }

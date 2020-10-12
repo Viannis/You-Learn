@@ -49,9 +49,28 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                 if(snapshot.hasData){
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return Center(
-                        child: Text(
-                          "Loading..."
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator()
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Loading...",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.w400
+                                ),
+                              ),
+                            ],
+                          )
                         )
                       );
                       break;
@@ -229,15 +248,64 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                   }
                 }
                 else if(snapshot.hasError){
-                  return Center(
-                    child: Text(
-                      "Oops Error Occured"
-                    )
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(),
+                        Image.asset(
+                          './assets/images/Error.png',
+                          width: MediaQuery.of(context).size.width * 0.6
+                        ),
+                        SizedBox(),
+                        Text(
+                          "Oops!",
+                          style: GoogleFonts.poppins(
+                            fontSize: 35,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'Some error occurred, Check your Internet and try again later',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1,
+                            color: Theme.of(context).primaryColor
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(),
+                      ],
+                    ),
                   );
                 }
                 else{
-                  return Center(
-                    child: CircularProgressIndicator()
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator()
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Loading...",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.w400
+                            ),
+                          ),
+                        ],
+                      )
+                    )
                   );
                 }
               }

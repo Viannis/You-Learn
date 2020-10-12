@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../main.dart';
 
@@ -22,8 +23,23 @@ class _AuthScreenState extends State<AuthScreen> {
       loading = true;
     });
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-
+    GoogleSignInAuthentication googleSignInAuthentication;
+    try{
+      final GoogleSignInAuthentication tempAuth = await googleSignInAccount.authentication;
+      googleSignInAuthentication = tempAuth;
+    }
+    catch(e){
+      Fluttertoast.showToast(
+        msg: "Select a google account",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 3
+      );
+      setState(() {
+        loading = false;
+      });
+      return null;
+    }
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       idToken: googleSignInAuthentication.idToken, 
       accessToken: googleSignInAuthentication.accessToken
@@ -99,7 +115,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ]
                   )
                 ),
-                SizedBox(height: 55),
+                SizedBox(height: 40),
                 Text(
                   "Welcome",
                   style: GoogleFonts.poppins(
@@ -123,7 +139,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(height: 35),
+                SizedBox(height: 40),
                 Container(
                   width: 190,
                   child: RaisedButton(
@@ -151,6 +167,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     onPressed: (){
                       signInWithGoogle().then((user) {
+                        if(user == null){
+                          return;
+                        }
                         checkCloudFirestore(user.uid).then((cloudFirestoreState) {
                           if(cloudFirestoreState){
                             setState(() {
@@ -208,6 +227,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     onPressed: (){
                       signInWithGoogle().then((user) {
+                        if(user == null){
+                          return;
+                        }
                         checkCloudFirestore(user.uid).then((cloudFirestoreState) {
                           if(cloudFirestoreState){
                             setState(() {
@@ -228,16 +250,25 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                   ),
                 ),
-                SizedBox(height: 15),
-                loading ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                SizedBox(height: 30),
+                loading ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
+                    SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6F00)),
+                      )
+                    ),
+                    SizedBox(width: 10),
                     Text(
                       "Loading...",
                       style: GoogleFonts.poppins(
-                        color: Color(0xFFC53AFF)
+                        color: Color(0xFF425066),
+                        fontSize: 18,
+                        letterSpacing: 1
                       ),
                     )
                   ],

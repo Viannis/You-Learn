@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -187,13 +188,34 @@ class _CourseScreenState extends State<CourseScreen> {
                 if(snapshot.hasData){
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return Center(
-                        child: Text("Loading...")
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator()
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Loading...",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.w400
+                                ),
+                              ),
+                            ],
+                          )
+                        )
                       );
                       break;
                     default:
                       List<DocumentSnapshot> docSnapshot = snapshot.data.documents;
-                      return Container(
+                      return docSnapshot.length > 0 ? Container(
                         height: MediaQuery.of(context).size.height - 200,
                         child: ListView.builder(
                           itemCount: docSnapshot.length,
@@ -250,9 +272,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                     if(snapshot1.hasData){
                                       switch (snapshot1.connectionState) {
                                         case ConnectionState.waiting:
-                                          return Center(
-                                            child: Text("Loading...")
-                                          );
+                                          return Center();
                                           break;
                                         default:
                                           List<DocumentSnapshot> dcSnap = snapshot1.data.documents;
@@ -396,10 +416,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                       );
                                                     }
                                                     else{
-                                                      return Container(
-                                                        width:0,
-                                                        height:0
-                                                      );
+                                                      return Center();
                                                     }
                                                   } 
                                                 );
@@ -409,8 +426,38 @@ class _CourseScreenState extends State<CourseScreen> {
                                       }
                                     }
                                     else if(snapshot1.hasError){
-                                      return Center(
-                                        child: Text("Oops Error occured")
+                                      return Container(
+                                        height: MediaQuery.of(context).size.height * 0.6,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(),
+                                            Image.asset(
+                                              './assets/images/Error.png',
+                                              width: MediaQuery.of(context).size.width * 0.6
+                                            ),
+                                            SizedBox(),
+                                            Text(
+                                              "Oops!",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 35,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Some error occurred, Check your Internet and try again later',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                letterSpacing: 1,
+                                                color: Theme.of(context).primaryColor
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(),
+                                          ],
+                                        ),
                                       );
                                     }
                                     else{
@@ -436,12 +483,73 @@ class _CourseScreenState extends State<CourseScreen> {
                             );
                           }
                         ),
+                      ) : Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(),
+                            Image.asset(
+                              './assets/images/NoData.png',
+                              width: MediaQuery.of(context).size.width * 0.5
+                            ),
+                            SizedBox(),
+                            Text(
+                              'Oops!',
+                              style: GoogleFonts.poppins(
+                                fontSize: 35,
+                                fontWeight: FontWeight.w600
+                              ),
+                            ),
+                            Text(
+                              "You haven't selected any categories",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 1,
+                                color: Theme.of(context).primaryColor
+                              ),
+                            ),
+                            SizedBox()
+                          ],
+                        )
                       );
                   }
                 }
                 else if(snapshot.hasError){
-                  return Center(
-                    child: Text("Oops Error Occured")
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(),
+                        Image.asset(
+                          './assets/images/Error.png',
+                          width: MediaQuery.of(context).size.width * 0.6
+                        ),
+                        SizedBox(),
+                        Text(
+                          "Oops!",
+                          style: GoogleFonts.poppins(
+                            fontSize: 35,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'Some error occurred, Check your Internet and try again later',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1,
+                            color: Theme.of(context).primaryColor
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(),
+                      ],
+                    ),
                   );
                 }
                 else{
@@ -456,7 +564,30 @@ class _CourseScreenState extends State<CourseScreen> {
                 if(snapshot.hasData){
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return Center(child: Text("Loading..."),);
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator()
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Loading...",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.w400
+                                ),
+                              ),
+                            ],
+                          )
+                        )
+                      );
                       break;
                     default:
                       return snapshot.data.documents.length > 0 ? Container(
@@ -507,7 +638,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                     Icon(
                                                       Icons.check_circle,
                                                       size: 25,
-                                                      color: Color(0xFF55FF00),
+                                                      color: Color(0xFF00FF07),
                                                     )
                                                   ],
                                                 ),
@@ -632,9 +763,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                     ],
                                                   )
                                                 ],
-                                              ),
-                                              
-                                              
+                                              ), 
                                             ],
                                           ),
                                           decoration: BoxDecoration(
@@ -661,8 +790,37 @@ class _CourseScreenState extends State<CourseScreen> {
                                     }
                                     else if(snapshot1.hasError){
                                       return Container(
-                                        width: 0.0,
-                                        height: 0
+                                        height: MediaQuery.of(context).size.height * 0.6,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(),
+                                            Image.asset(
+                                              './assets/images/Error.png',
+                                              width: MediaQuery.of(context).size.width * 0.6
+                                            ),
+                                            SizedBox(),
+                                            Text(
+                                              "Oops!",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 35,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Some error occurred, Check your Internet and try again later',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                letterSpacing: 1,
+                                                color: Theme.of(context).primaryColor
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(),
+                                          ],
+                                        ),
                                       );
                                     }
                                     else{
@@ -690,17 +848,72 @@ class _CourseScreenState extends State<CourseScreen> {
                           }
                         ),
                       ) : Container(
-                        child: Center(
-                          child: Text("No documents yet")
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(),
+                            Image.asset(
+                              './assets/images/NoData.png',
+                              width: MediaQuery.of(context).size.width * 0.5
+                            ),
+                            SizedBox(),
+                            Text(
+                              'Oops!',
+                              style: GoogleFonts.poppins(
+                                fontSize: 35,
+                                fontWeight: FontWeight.w600
+                              ),
+                            ),
+                            Text(
+                              "You haven't enrolled in any courses",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 1,
+                                color: Theme.of(context).primaryColor
+                              ),
+                            ),
+                            SizedBox()
+                          ],
                         )
                       );
                   }
                 }
                 else if(snapshot.hasError){
-                  return Center(
-                    child: Text(
-                      "Oops Error Occured"
-                    )
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(),
+                        Image.asset(
+                          './assets/images/Error.png',
+                          width: MediaQuery.of(context).size.width * 0.6
+                        ),
+                        SizedBox(),
+                        Text(
+                          "Oops!",
+                          style: GoogleFonts.poppins(
+                            fontSize: 35,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'Some error occurred, Check your Internet and try again later',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1,
+                            color: Theme.of(context).primaryColor
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(),
+                      ],
+                    ),
                   );
                 }
                 else{
@@ -752,6 +965,14 @@ class _AppDrawerState extends State<AppDrawer> {
                     currentAccountPicture: CircleAvatar(
                       backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(snapshot.data["imageUrl"]),
+                      onBackgroundImageError: (dynamic d, StackTrace s){
+                        Fluttertoast.showToast(
+                          msg: 'Oops! Error loading Image',
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2
+                        );
+                      },
                     ),
                     accountName: Text(
                       snapshot.data["name"],
