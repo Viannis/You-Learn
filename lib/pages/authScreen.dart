@@ -14,11 +14,11 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool loading = false;
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  Future<FirebaseUser> signInWithGoogle() async{
+  Future<User> signInWithGoogle() async{
     setState(() {
       loading = true;
     });
@@ -40,25 +40,25 @@ class _AuthScreenState extends State<AuthScreen> {
       });
       return null;
     }
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       idToken: googleSignInAuthentication.idToken, 
       accessToken: googleSignInAuthentication.accessToken
     );
 
-    final AuthResult authResult = await _auth.signInWithCredential(credential);
-    final FirebaseUser user = authResult.user;
+    final UserCredential authResult = await _auth.signInWithCredential(credential);
+    final User user = authResult.user;
 
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
 
-    final FirebaseUser currentUser = await _auth.currentUser();
+    final User currentUser = _auth.currentUser;
     assert(user.uid == currentUser.uid);
 
     return user;
   }
 
   Future<bool> checkCloudFirestore(String userUid) async{
-    final snapShot = await dbRef.collection("Users").document(userUid).get();
+    final snapShot = await dbRef.collection("Users").doc(userUid).get();
     if(snapShot.exists && snapShot != null){
       return true;
     }
@@ -67,11 +67,11 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> updateUserData(FirebaseUser firebaseUser) async{
-    await dbRef.collection("Users").document(firebaseUser.uid).setData({
+  Future<void> updateUserData(User firebaseUser) async{
+    await dbRef.collection("Users").doc(firebaseUser.uid).set({
       'name' : firebaseUser.displayName,
       'email' : firebaseUser.email,
-      'imageUrl' : firebaseUser.photoUrl
+      'imageUrl' : firebaseUser.photoURL
     });
   }
 
@@ -175,14 +175,14 @@ class _AuthScreenState extends State<AuthScreen> {
                             setState(() {
                               loading = false;
                             });
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").doc(user.uid))));
                           } 
                           else{
                             updateUserData(user).then((nothing1) {
                               setState(() {
                                 loading = false;
                               });
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").doc(user.uid))));
                             });
                           }
                         });
@@ -235,14 +235,14 @@ class _AuthScreenState extends State<AuthScreen> {
                             setState(() {
                               loading = false;
                             });
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").doc(user.uid))));
                           } 
                           else{
                             updateUserData(user).then((nothing1) {
                               setState(() {
                                 loading = false;
                               });
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").document(user.uid))));
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => HomePage(dbRef.collection("Users").doc(user.uid))));
                             });
                           }
                         });

@@ -39,9 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> getCompletedCount() async {
-    await widget.documentReference.collection("Enrolled").getDocuments().then((value) {
-      value.documents.forEach((element) {
-        if (element.data["completed"]) {
+    await widget.documentReference.collection("Enrolled").get().then((value) {
+      value.docs.forEach((element) {
+        if (element.data()["completed"]) {
           setState(() {
             completed += 1;
           });
@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<String> getUrl(Uint8List imageFile) async {
-    final String tempUid = widget.documentReference.documentID;
+    final String tempUid = widget.documentReference.id;
     final StorageReference sRef = storageReference.child("$tempUid/profileImage");
     final StorageUploadTask uploadTask = sRef.putData(imageFile);
     final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
@@ -201,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                             ImagePicker().getImage(source: ImageSource.gallery).then((value) async{
                                                               value.readAsBytes().then((value1){
                                                                 getUrl(value1).then((value2) async{
-                                                                  widget.documentReference.updateData({
+                                                                  widget.documentReference.update({
                                                                     'imageUrl' : value2
                                                                   });
                                                                 });
@@ -309,7 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     controller.clear();
                                                     Navigator.of(context).pop();
                                                     if(tempName.length > 1){
-                                                      widget.documentReference.updateData({
+                                                      widget.documentReference.update({
                                                         'name' : tempName
                                                       });
                                                     }
@@ -559,7 +559,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 20),
                     myCoursesSelected
                       ? FutureBuilder(
-                          future: widget.documentReference.collection("Enrolled").getDocuments(),
+                          future: widget.documentReference.collection("Enrolled").get(),
                           builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
                             if (snapshot.hasData) {
                               switch (snapshot.connectionState) {
@@ -611,14 +611,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   );
                                   break;
                                 default:
-                                  return snapshot.data.documents.length > 0
+                                  return snapshot.data.docs.length > 0
                                     ? 
                                     Container(
                                       height: MediaQuery.of(context).size.height - 450,
                                       child: ListView.builder(
-                                        itemCount: snapshot.data.documents.length,
+                                        itemCount: snapshot.data.docs.length,
                                         itemBuilder: (BuildContext context,int index) {
-                                          DocumentReference docRef = snapshot.data.documents[index]["course"];
+                                          DocumentReference docRef = snapshot.data.docs[index]["course"];
                                             return FutureBuilder(
                                               future: docRef.get(),
                                               builder: (BuildContext context,AsyncSnapshot<DocumentSnapshot> snapshot1) {
@@ -659,7 +659,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                           color: Theme.of(context).primaryColor,
                                                         ),
                                                         onPressed:() {
-                                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.documents[index].reference,snapshot1.data["title"])));
+                                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.docs[index].reference,snapshot1.data["title"])));
                                                         }
                                                       ),
                                                     ),
@@ -801,7 +801,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                       : completed > 0
                           ? FutureBuilder(
-                              future: widget.documentReference.collection("Enrolled").getDocuments(),
+                              future: widget.documentReference.collection("Enrolled").get(),
                               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                 if (snapshot.hasData) {
                                   switch (snapshot.connectionState) {
@@ -814,10 +814,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       return Container(
                                         height: MediaQuery.of(context).size.height - 450,
                                         child: ListView.builder(
-                                          itemCount: snapshot.data.documents.length,
+                                          itemCount: snapshot.data.docs.length,
                                           itemBuilder: (BuildContext context, int index) {
-                                            DocumentReference docRef = snapshot.data.documents[index]["course"];
-                                            return snapshot.data.documents[index]["completed"]
+                                            DocumentReference docRef = snapshot.data.docs[index]["course"];
+                                            return snapshot.data.docs[index]["completed"]
                                               ? FutureBuilder(
                                                   future: docRef.get(),
                                                   builder: (BuildContext context,AsyncSnapshot<DocumentSnapshot> snapshot1) {
@@ -858,7 +858,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                               color: Theme.of(context).primaryColor,
                                                             ),
                                                             onPressed: () {
-                                                              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.documents[index].reference,snapshot1.data["title"])));
+                                                              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.docs[index].reference,snapshot1.data["title"])));
                                                             }
                                                           ),
                                                         ),

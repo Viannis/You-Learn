@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youlearn/assets/themeProvider.dart';
@@ -12,7 +12,9 @@ import './pages/categoryScreen.dart';
 import 'package:flutter/services.dart';
 import 'assets/colors.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp
@@ -25,10 +27,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
   DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
   FirebaseAuth auth = FirebaseAuth.instance;
-  FirebaseUser user;
+  User user;
   bool signedIn = false;
   bool loading = true;
   String userUid;
@@ -54,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<bool> checkAuthStatus() async{
-    user = await auth.currentUser();
+    user = auth.currentUser;
     return user == null ? false : true;
   }
 
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: Styles.themeData(themeChangeProvider.darkTheme, context),
-            home: loading ? SplashScreen() : signedIn ? HomePage(dbRef.collection("Users").document(userUid)) : AuthScreen() 
+            home: loading ? SplashScreen() : signedIn ? HomePage(dbRef.collection("Users").doc(userUid)) : AuthScreen() 
           );
         }
       ),
@@ -90,7 +92,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
   bool hasCategories = false;
   bool loading = true;
 
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<bool> checkForCategories(DocumentReference documentReference) async{
-    int length = await documentReference.collection("Categories").getDocuments().then((value) => value.documents.length);
+    int length = await documentReference.collection("Categories").get().then((value) => value.docs.length);
     if(length > 0){
       return true;
     }

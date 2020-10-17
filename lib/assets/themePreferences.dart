@@ -4,24 +4,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 class DarkThemePreference {
   static const THEME_STATUS = "THEMESTATUS";
   FirebaseAuth _auth = FirebaseAuth.instance;
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
   
 
   setDarkTheme(bool value) async{
-    FirebaseUser user = await _auth.currentUser();
+    User user = _auth.currentUser;
     if(user != null){
-      DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
-      await documentReference.updateData({
+      DocumentReference documentReference = dbRef.collection("Users").doc(user.uid);
+      await documentReference.update({
         "darkTheme" : value
       });
     }
   }
 
   Future<bool> getTheme() async {
-    FirebaseUser user = await _auth.currentUser();
+    User user = _auth.currentUser;
     if(user != null){
-      DocumentReference documentReference = dbRef.collection("Users").document(user.uid);
-      bool darkTheme = await documentReference.get().then((value) => value.data["darkTheme"]);
+      DocumentReference documentReference = dbRef.collection("Users").doc(user.uid);
+      bool darkTheme = await documentReference.get().then((value) => value.data()["darkTheme"]);
       return darkTheme ?? false;
     } else {
       return false;

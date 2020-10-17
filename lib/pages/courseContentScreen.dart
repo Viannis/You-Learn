@@ -18,25 +18,25 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
   bool quiz = false;
 
   Future<DocumentReference> test() async{
-    return await widget._documentReference.get().then((value) => value.data["course"]);
+    return await widget._documentReference.get().then((value) => value.data()["course"]);
   }
 
   Future<DocumentSnapshot> getRecentCourse() async{
-    DocumentReference recentRef =  await widget._documentReference.get().then((value) => value.data["recent"]);
+    DocumentReference recentRef =  await widget._documentReference.get().then((value) => value.data()["recent"]);
     return await recentRef.get();    
   }
 
   Future<CollectionReference> getTopicRef() async{
-    DocumentReference docRef = await widget._documentReference.get().then((value) => value.data["course"]);
+    DocumentReference docRef = await widget._documentReference.get().then((value) => value.data()["course"]);
     return docRef.collection("Topics");
   }
 
   Future<int> getProgress() async{
     int percentage = await widget._documentReference.get().then((value) async{
-      DocumentReference courseRef = value.data["course"];
-      List<DocumentReference> pro = List.from(value.data["progress"]);
+      DocumentReference courseRef = value.data()["course"];
+      List<DocumentReference> pro = List.from(value.data()["progress"]);
       int progressLength = pro.length;
-      int topicsLength = await courseRef.collection("Topics").getDocuments().then((docs)=> docs.documents.length);
+      int topicsLength = await courseRef.collection("Topics").get().then((docs)=> docs.docs.length);
       int percent = ((progressLength / topicsLength) * 100).toInt();
       return percent;
     });
@@ -44,17 +44,17 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
   }
 
   Future<bool> checkGetProgress() async{
-    var temp = await widget._documentReference.get().then((value) => value.data["progress"]);
+    var temp = await widget._documentReference.get().then((value) => value.data()["progress"]);
     return temp == null ? false : true;
   }
 
   Future<QuerySnapshot> getTopics() async{
-    DocumentReference courseRef = await widget._documentReference.get().then((value) => value.data["course"]);
-    return await courseRef.collection("Topics").getDocuments();
+    DocumentReference courseRef = await widget._documentReference.get().then((value) => value.data()["course"]);
+    return await courseRef.collection("Topics").get();
   }
 
   void updateCompletedStatus() async{
-    await widget._documentReference.updateData({
+    await widget._documentReference.update({
       'completed' : true
     });
   }
@@ -130,7 +130,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                       );
                       break;
                     default:
-                      return snap.data["progress"] != null ? FutureBuilder(
+                      return snap.data.data()["progress"] != null ? FutureBuilder(
                         future: getProgress(),
                         builder: (BuildContext context, AsyncSnapshot<int> snaphot){
                           if(snaphot.hasData){
@@ -255,7 +255,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                       );
                       break;
                     default:
-                      return snap.data["recent"] != null ? FutureBuilder(
+                      return snap.data.data()["recent"] != null ? FutureBuilder(
                         future: getRecentCourse(),
                         builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
                           if(snapshot.hasData){
@@ -306,7 +306,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                                           ),
                                           SizedBox(width: 10),
                                           Text(
-                                            snapshot.data["title"],
+                                            snapshot.data.data()["title"],
                                             style: GoogleFonts.poppins(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500
@@ -322,7 +322,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                                         color: Theme.of(context).primaryColor,
                                       ), 
                                       onPressed: (){
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ContentScreen(int.parse(snapshot.data.documentID), topicRef,widget._documentReference)));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ContentScreen(int.parse(snapshot.data.id), topicRef,widget._documentReference)));
                                       }
                                     ),
                                   ],
@@ -383,7 +383,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                           Container(
                             height: quiz ? MediaQuery.of(context).size.height - 480 : MediaQuery.of(context).size.height - 410,
                             child: ListView.builder(
-                              itemCount: snapshot.data.documents.length,
+                              itemCount: snapshot.data.docs.length,
                               itemBuilder: (BuildContext context, int index){
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -414,7 +414,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                                             ),
                                             SizedBox(width: 10),
                                             Text(
-                                              snapshot.data.documents[index]["title"],
+                                              snapshot.data.docs[index]["title"],
                                               style: GoogleFonts.poppins(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500
@@ -430,7 +430,7 @@ class _CourseContentScreenState extends State<CourseContentScreen> {
                                           color: Theme.of(context).primaryColor,
                                         ), 
                                         onPressed: (){
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ContentScreen(int.parse(snapshot.data.documents[index].documentID), topicRef,widget._documentReference)));
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ContentScreen(int.parse(snapshot.data.docs[index].id), topicRef,widget._documentReference)));
                                         }
                                       ),
                                     ],

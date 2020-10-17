@@ -11,7 +11,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
   List<String> tempRef;
   bool loading = true;
   Map<String, bool> checkValues = Map();
@@ -33,34 +33,34 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   Future<List<Map>> getCategories() async{
     List<Map> temp = List();
-    await widget._documentReference.collection("Categories").getDocuments().then((userCat) async{
-      if(userCat.documents.length > 0){
-        userCat.documents.forEach((element) { 
-          tempRef.add(element.data["category"].documentID);
+    await widget._documentReference.collection("Categories").get().then((userCat) async{
+      if(userCat.docs.length > 0){
+        userCat.docs.forEach((element) { 
+          tempRef.add(element.data()["category"].id);
         });
-        await dbRef.collection("Categories").getDocuments().then((docs) async{
-          for(var i = 0; i < docs.documents.length; i++){
+        await dbRef.collection("Categories").get().then((docs) async{
+          for(var i = 0; i < docs.docs.length; i++){
             temp.add({
-              "docId" : docs.documents[i].documentID,
-              "selected" : tempRef.contains(docs.documents[i].documentID),
-              "title" : docs.documents[i].data["title"],
-              "image" : docs.documents[i].data["coverImageUrl"],
-              "reference" : docs.documents[i].reference,
-              "length" : await docs.documents[i].reference.collection("Courses").getDocuments().then((value) => value.documents.length)
+              "docId" : docs.docs[i].id,
+              "selected" : tempRef.contains(docs.docs[i].id),
+              "title" : docs.docs[i].data()["title"],
+              "image" : docs.docs[i].data()["coverImageUrl"],
+              "reference" : docs.docs[i].reference,
+              "length" : await docs.docs[i].reference.collection("Courses").get().then((value) => value.docs.length)
             });
           }
         });
       }
       else{
-        await dbRef.collection("Categories").getDocuments().then((docs) async{
-          for(var i = 0; i < docs.documents.length; i++){
+        await dbRef.collection("Categories").get().then((docs) async{
+          for(var i = 0; i < docs.docs.length; i++){
             temp.add({
-              "docId" : docs.documents[i].documentID,
+              "docId" : docs.docs[i].id,
               "selected" : false,
-              "title" : docs.documents[i].data["title"],
-              "image" : docs.documents[i].data["coverImageUrl"],
-              "reference" : docs.documents[i].reference,
-              "length" : await docs.documents[i].reference.collection("Courses").getDocuments().then((value) => value.documents.length)
+              "title" : docs.docs[i].data()["title"],
+              "image" : docs.docs[i].data()["coverImageUrl"],
+              "reference" : docs.docs[i].reference,
+              "length" : await docs.docs[i].reference.collection("Courses").get().then((value) => value.docs.length)
             });
           }
         });
@@ -71,10 +71,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   Future<void> addCategories(List<Map> localCategories) async{
     final CollectionReference categoryRef = widget._documentReference.collection("Categories");
-    await categoryRef.getDocuments().then((value) async{
-      if(value.documents.length > 0){
-        await categoryRef.getDocuments().then((value){
-          value.documents.forEach((element) async{ 
+    await categoryRef.get().then((value) async{
+      if(value.docs.length > 0){
+        await categoryRef.get().then((value){
+          value.docs.forEach((element) async{ 
             await element.reference.delete();
           });
         });

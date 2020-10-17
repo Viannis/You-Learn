@@ -20,8 +20,8 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
   }
 
   updateRecent(DocumentReference currentTopic) async{
-    await widget.enrolledCourseRefrence.get().then((value) => value.data["progress"]) == null ? updateProgressNew(currentTopic) : updateProgress(currentTopic);
-    await widget.enrolledCourseRefrence.updateData({
+    await widget.enrolledCourseRefrence.get().then((value) => value.data()["progress"]) == null ? updateProgressNew(currentTopic) : updateProgress(currentTopic);
+    await widget.enrolledCourseRefrence.update({
       'recent' : currentTopic,
     });
   }
@@ -29,19 +29,19 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
   updateProgressNew(DocumentReference currentTopic) async{
     List<DocumentReference> pro = List();
     pro.add(currentTopic);
-    await widget.enrolledCourseRefrence.updateData({
+    await widget.enrolledCourseRefrence.update({
       'progress' : pro,
     });
   }
 
   updateProgress(DocumentReference currentTopic) async{   
-    List<DocumentReference> pro = List<DocumentReference>.from(await widget.enrolledCourseRefrence.get().then((value) => value.data["progress"]));
+    List<DocumentReference> pro = List<DocumentReference>.from(await widget.enrolledCourseRefrence.get().then((value) => value.data()["progress"]));
     pro.contains(currentTopic) ? print("true") : updateProgressAdd(currentTopic, pro);
   }
 
   updateProgressAdd(DocumentReference currentTopic,List<DocumentReference> pro) async{
     pro.add(currentTopic);
-    await widget.enrolledCourseRefrence.updateData({
+    await widget.enrolledCourseRefrence.update({
       'progress' : pro,
     });
   }
@@ -91,7 +91,7 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
         ),
         SizedBox(height: 30),
         FutureBuilder(
-          future: widget.docRef.collection("Contents").getDocuments(),
+          future: widget.docRef.collection("Contents").get(),
           builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot2){
             if(snapshot2.hasData) {                                   
               switch (snapshot2.connectionState) {
@@ -106,10 +106,10 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
                       padding: EdgeInsets.symmetric(horizontal:15),
                       height: MediaQuery.of(context).size.height - 200,
                       child: ListView.builder(
-                        itemCount: snapshot2.data.documents.length,
+                        itemCount: snapshot2.data.docs.length,
                         itemBuilder: (BuildContext context, int index1){
                           return FutureBuilder(
-                            future: widget.docRef.collection("Contents").document((index1 + 1).toString()).get(),
+                            future: widget.docRef.collection("Contents").doc((index1 + 1).toString()).get(),
                             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot3){
                               if(snapshot3.hasData){
                                 switch (snapshot3.data["type"]) {

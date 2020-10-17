@@ -25,7 +25,7 @@ class _ContentScreenState extends State<ContentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: widget.topicRef.getDocuments(),
+        future: widget.topicRef.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
           if(snapshot.hasData){
             switch (snapshot.connectionState) {
@@ -57,7 +57,7 @@ class _ContentScreenState extends State<ContentScreen> {
                 break;
               default:
                 return PageView.builder(
-                  itemCount: snapshot.data.documents.length,
+                  itemCount: snapshot.data.docs.length,
                   controller: controller,
                   physics: ClampingScrollPhysics(),
                   onPageChanged: (pageIndex){
@@ -65,7 +65,7 @@ class _ContentScreenState extends State<ContentScreen> {
                   },
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context,int index){
-                    DocumentReference docRef = widget.topicRef.document((index + 1).toString());
+                    DocumentReference docRef = widget.topicRef.doc((index + 1).toString());
                     return SafeArea(
                       child: SingleChildScrollView(
                         child: Column(

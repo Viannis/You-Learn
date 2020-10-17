@@ -18,7 +18,7 @@ class CategoryCoursesScreen extends StatefulWidget {
 class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
   
   Future<DocumentSnapshot> checkEnrolled(DocumentReference categoryRef) async{
-    DocumentSnapshot courseRef = await widget.userRef.collection("Enrolled").getDocuments().then((value) => value.documents.firstWhere((element) => element.data["course"] == categoryRef,orElse: () => null));
+    DocumentSnapshot courseRef = await widget.userRef.collection("Enrolled").get().then((value) => value.docs.firstWhere((element) => element.data()["course"] == categoryRef,orElse: () => null));
     return courseRef;
   }
   
@@ -44,7 +44,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
           children: <Widget>[
             SizedBox(height: 20),
             FutureBuilder(
-              future: widget.docReference.collection("Courses").getDocuments(),
+              future: widget.docReference.collection("Courses").get(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                 if(snapshot.hasData){
                   switch (snapshot.connectionState) {
@@ -78,9 +78,9 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                      return Container(
                        height: MediaQuery.of(context).size.height - 130,
                        child: ListView.builder(
-                         itemCount: snapshot.data.documents.length,
+                         itemCount: snapshot.data.docs.length,
                          itemBuilder: (BuildContext context, int index){
-                           DocumentReference docRef = snapshot.data.documents[index]["course"];
+                           DocumentReference docRef = snapshot.data.docs[index]["course"];
                            return Column(
                              children: <Widget>[
                                FutureBuilder(
@@ -101,7 +101,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              courseData.data["title"],
+                                              courseData.data()["title"],
                                               style: GoogleFonts.poppins(
                                                 color: Colors.white,
                                                 fontSize: 25,
@@ -110,7 +110,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                               )
                                             ),
                                             Text(
-                                              courseData.data["level"],
+                                              courseData.data()["level"],
                                               style: GoogleFonts.poppins(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w400,
@@ -122,7 +122,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: <Widget>[
                                                 RatingBarIndicator(
-                                                  rating: courseData.data["ratings"].toDouble(),
+                                                  rating: courseData.data()["ratings"].toDouble(),
                                                   itemCount: 5,
                                                   itemSize: 17,
                                                   physics: BouncingScrollPhysics(),
@@ -150,7 +150,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                                       ),
                                                       WidgetSpan(child: SizedBox(width:3)),
                                                       TextSpan(
-                                                        text: courseData.data["followers"].toString()
+                                                        text: courseData.data()["followers"].toString()
                                                       )
                                                     ]
                                                   )
@@ -165,7 +165,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                                       ),
                                                       onPressed: (){
                                                         checkEnrolled(courseData.reference).then((value){
-                                                          value != null ? Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(value.reference,courseData.data["title"]))) : Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => EnrollmentScreen(docRef,courseData.data["title"],widget.docReference)));
+                                                          value != null ? Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(value.reference,courseData.data()["title"]))) : Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => EnrollmentScreen(docRef,courseData.data()["title"],widget.docReference)));
                                                         }); 
                                                       },
                                                       child: Row(
@@ -209,7 +209,7 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                             fit: BoxFit.cover,
                                             colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                                             image: NetworkImage(
-                                              courseData.data["coverImageUrl"]
+                                              courseData.data()["coverImageUrl"]
                                             )
                                           )
                                         ),
@@ -225,8 +225,9 @@ class _CategoryCoursesScreenState extends State<CategoryCoursesScreen> {
                                    else{
                                      return Center(
                                         child: Shimmer.fromColors(
-                                            baseColor: Color(0xFFCCCCCC),
-                                            highlightColor: Color(0xFFE2E2E2),                          child: Container(
+                                          baseColor: Color(0xFFCCCCCC),
+                                          highlightColor: Color(0xFFE2E2E2),                          
+                                          child: Container(
                                             width: MediaQuery.of(context).size.width,
                                             height: 180,
                                             decoration: BoxDecoration(

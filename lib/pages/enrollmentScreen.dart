@@ -59,7 +59,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                             image: DecorationImage(
                               fit: BoxFit.cover,
                               image: NetworkImage(
-                                snapshot.data.data["coverImageUrl"],
+                                snapshot.data.data()["coverImageUrl"],
                                 
                               )
                             )
@@ -88,7 +88,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                 borderRadius: BorderRadius.circular(30)
                               ),
                               child: Text(
-                                snapshot.data.data["level"].toString().toUpperCase(),
+                                snapshot.data.data()["level"].toString().toUpperCase(),
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
@@ -116,7 +116,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                   ),
                                   SizedBox(width:6),
                                   Text(
-                                    snapshot.data.data["followers"].toString(),
+                                    snapshot.data.data()["followers"].toString(),
                                     style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       color: Theme.of(context).textTheme.bodyText1.color
@@ -144,7 +144,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                   ),
                                   SizedBox(width:6),
                                   Text(
-                                    snapshot.data.data["ratings"].toString(),
+                                    snapshot.data.data()["ratings"].toString(),
                                     style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       color: Theme.of(context).textTheme.bodyText1.color
@@ -158,7 +158,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                         SizedBox(height:10),
                         Container(
                           child: Text(
-                            snapshot.data.data["description"],
+                            snapshot.data.data()["description"],
                             style: GoogleFonts.poppins(
                               letterSpacing: 1,
                               fontSize: 14,
@@ -182,7 +182,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                         SizedBox(height:10),
                         Container(
                           child: FutureBuilder(
-                            future: snapshot.data.reference.collection("Topics").getDocuments(),
+                            future: snapshot.data.reference.collection("Topics").get(),
                             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot1){
                               if(snapshot1.hasData){
                                 switch (snapshot1.connectionState) {
@@ -195,12 +195,12 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                     break;
                                   default:
                                     return Container(
-                                      height: (snapshot1.data.documents.length * 40).toDouble(),
+                                      height: (snapshot1.data.docs.length * 40).toDouble(),
                                       child: ListView.builder(
-                                        itemCount: snapshot1.data.documents.length,
+                                        itemCount: snapshot1.data.docs.length,
                                         itemBuilder: (BuildContext context,int index){
                                           return FutureBuilder(
-                                            future: snapshot.data.reference.collection("Topics").document((index+1).toString()).get(),
+                                            future: snapshot.data.reference.collection("Topics").doc((index+1).toString()).get(),
                                             builder: (BuildContext context,AsyncSnapshot<DocumentSnapshot> snapshot2){
                                               if(snapshot2.hasData){
                                                 return Container(
@@ -215,7 +215,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                                       ),
                                                       SizedBox(width:10),
                                                       Text(
-                                                        snapshot2.data["title"],
+                                                        snapshot2.data.data()["title"],
                                                         style: GoogleFonts.poppins(
                                                           fontSize: 15,
                                                           fontWeight: FontWeight.w400,
@@ -262,7 +262,7 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                         ),
                         SizedBox(height: 15),
                         FutureBuilder(
-                          future: snapshot.data.reference.collection("ExternalLinks").getDocuments(),
+                          future: snapshot.data.reference.collection("ExternalLinks").get(),
                           builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot3){
                             if(snapshot3.hasData){
                               switch (snapshot3.connectionState) {
@@ -275,9 +275,9 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                   break;
                                 default:
                                   return Container(
-                                    height: (snapshot3.data.documents.length * 31).toDouble(),
+                                    height: (snapshot3.data.docs.length * 31).toDouble(),
                                     child: ListView.builder(
-                                      itemCount: snapshot3.data.documents.length,
+                                      itemCount: snapshot3.data.docs.length,
                                       itemBuilder: (BuildContext context, int index1){
                                         return Container(
                                           height:31,
@@ -286,12 +286,12 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () async{
-                                                  await canLaunch(snapshot3.data.documents[index1].data["link"]) ? 
-                                                    await launch(snapshot3.data.documents[index1].data["link"]) : 
+                                                  await canLaunch(snapshot3.data.docs[index1].data()["link"]) ? 
+                                                    await launch(snapshot3.data.docs[index1].data()["link"]) : 
                                                     Scaffold.of(context).showSnackBar(SnackBar(content: Text("Sorry, the URL is currently inactive")));
                                                 },
                                                 child: Text(
-                                                  snapshot3.data.documents[index1].data["link"],
+                                                  snapshot3.data.docs[index1].data()["link"],
                                                   style: GoogleFonts.poppins(
                                                     fontSize: 14,
                                                     color: Theme.of(context).primaryColor
@@ -348,10 +348,10 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
               'completed' : false,
               'course' : widget.courseRef
             }).then((value) async{
-              DocumentReference courseRef = await value.get().then((value) => value.data["course"]);
-              int followers = (await courseRef.get().then((value) => value.data["followers"])).toInt();
+              DocumentReference courseRef = await value.get().then((value) => value.data()["course"]);
+              int followers = (await courseRef.get().then((value) => value.data()["followers"])).toInt();
               followers += 1;
-              await courseRef.updateData({
+              await courseRef.update({
                 'followers' : followers
               }).then((value){
                 Navigator.of(context).pop();

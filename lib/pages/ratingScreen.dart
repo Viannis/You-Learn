@@ -14,23 +14,23 @@ class RatingScreen extends StatefulWidget {
 
 class _RatingScreenState extends State<RatingScreen> {
   bool ratingSubmitted = false;
-  Firestore dBref = Firestore.instance;
+  FirebaseFirestore dBref = FirebaseFirestore.instance;
   double tempRating = 4;
   bool loading = false;
 
   updateRatings() async{
     await widget.enrolledCourseRef.get().then((value) async{
-      if(value.data["rating"] != null){
-        double preRating = await widget.enrolledCourseRef.get().then((value) => value.data["rating"]);
-        await widget.enrolledCourseRef.updateData({
+      if(value.data()["rating"] != null){
+        double preRating = await widget.enrolledCourseRef.get().then((value) => value.data()["rating"]);
+        await widget.enrolledCourseRef.update({
           'rating' : tempRating
         }).then((nothing) async{
-          DocumentReference courseRef = await widget.enrolledCourseRef.get().then((value) => value.data["course"]);
-          double totalRatings = (await courseRef.get().then((value) => value.data["totalRatings"])).toDouble();
-          double followers = (await courseRef.get().then((value) => value.data["followers"])).toDouble();
+          DocumentReference courseRef = await widget.enrolledCourseRef.get().then((value) => value.data()["course"]);
+          double totalRatings = (await courseRef.get().then((value) => value.data()["totalRatings"])).toDouble();
+          double followers = (await courseRef.get().then((value) => value.data()["followers"])).toDouble();
           totalRatings -= preRating;
           totalRatings += tempRating;
-          await courseRef.updateData({
+          await courseRef.update({
             'totalRatings' : totalRatings,
             'ratings' : double.parse((totalRatings / followers).toStringAsFixed(2))
           }).then((value){
@@ -38,14 +38,14 @@ class _RatingScreenState extends State<RatingScreen> {
           });
         });
       } else{
-        await widget.enrolledCourseRef.updateData({
+        await widget.enrolledCourseRef.update({
           'rating' : tempRating
         }).then((nothing) async{
-          DocumentReference courseRef = await widget.enrolledCourseRef.get().then((value) => value.data["course"]);
-          double totalRatings = (await courseRef.get().then((value) => value.data["totalRatings"])).toDouble();
-          double followers = (await courseRef.get().then((value) => value.data["followers"])).toDouble();
+          DocumentReference courseRef = await widget.enrolledCourseRef.get().then((value) => value.data()["course"]);
+          double totalRatings = (await courseRef.get().then((value) => value.data()["totalRatings"])).toDouble();
+          double followers = (await courseRef.get().then((value) => value.data()["followers"])).toDouble();
           totalRatings += tempRating;
-          await courseRef.updateData({
+          await courseRef.update({
             'totalRatings' : totalRatings,
             'ratings' : double.parse((totalRatings / followers).toStringAsFixed(2))
           }).then((value){

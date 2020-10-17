@@ -26,10 +26,10 @@ class _CourseScreenState extends State<CourseScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool allSelected = true;
   bool enrolledSelected = false;
-  Firestore dbRef = Firestore.instance;
+  FirebaseFirestore dbRef = FirebaseFirestore.instance;
 
   Future<DocumentSnapshot> checkEnrolled(DocumentReference categoryRef) async{
-    DocumentSnapshot courseRef = await widget._documentReference.collection("Enrolled").getDocuments().then((value) => value.documents.firstWhere((element) => element.data["course"] == categoryRef,orElse: () => null));
+    DocumentSnapshot courseRef = await widget._documentReference.collection("Enrolled").get().then((value) => value.docs.firstWhere((element) => element.data()["course"] == categoryRef,orElse: () => null));
     return courseRef;
   }
 
@@ -214,7 +214,7 @@ class _CourseScreenState extends State<CourseScreen> {
                       );
                       break;
                     default:
-                      List<DocumentSnapshot> docSnapshot = snapshot.data.documents;
+                      List<DocumentSnapshot> docSnapshot = snapshot.data.docs;
                       return docSnapshot.length > 0 ? Container(
                         height: MediaQuery.of(context).size.height - 200,
                         child: ListView.builder(
@@ -267,7 +267,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                 ),
                                 SizedBox(height:10),
                                 FutureBuilder(
-                                  future: docReference.collection("Courses").getDocuments(),
+                                  future: docReference.collection("Courses").get(),
                                   builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot1){
                                     if(snapshot1.hasData){
                                       switch (snapshot1.connectionState) {
@@ -275,7 +275,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                           return Center();
                                           break;
                                         default:
-                                          List<DocumentSnapshot> dcSnap = snapshot1.data.documents;
+                                          List<DocumentSnapshot> dcSnap = snapshot1.data.docs;
                                           return Container(
                                             height: 200,
                                             child: ListView.builder(
@@ -300,7 +300,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                             children: <Widget>[
                                                               Text(
-                                                                courseData.data["title"],
+                                                                courseData.data()["title"],
                                                                 style: GoogleFonts.poppins(
                                                                   color: Colors.white,
                                                                   fontSize: 25,
@@ -309,7 +309,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                 )
                                                               ),
                                                               Text(
-                                                                courseData.data["level"],
+                                                                courseData.data()["level"],
                                                                 style: GoogleFonts.poppins(
                                                                   color: Colors.white,
                                                                   fontWeight: FontWeight.w400,
@@ -321,7 +321,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 children: <Widget>[
                                                                   RatingBarIndicator(
-                                                                    rating: courseData.data["ratings"].toDouble(),
+                                                                    rating: courseData.data()["ratings"].toDouble(),
                                                                     itemCount: 5,
                                                                     itemSize: 17,
                                                                     physics: BouncingScrollPhysics(),
@@ -349,7 +349,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                         ),
                                                                         WidgetSpan(child: SizedBox(width:3)),
                                                                         TextSpan(
-                                                                          text: courseData.data["followers"].toString()
+                                                                          text: courseData.data()["followers"].toString()
                                                                         )
                                                                       ]
                                                                     )
@@ -364,7 +364,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                                         ),
                                                                         onPressed: (){
                                                                           checkEnrolled(courseData.reference).then((value){
-                                                                            value != null ? Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(value.reference,courseData.data["title"]))) : Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => EnrollmentScreen(dcRef,courseData.data["title"],widget._documentReference)));
+                                                                            value != null ? Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(value.reference,courseData.data()["title"]))) : Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => EnrollmentScreen(dcRef,courseData.data()["title"],widget._documentReference)));
                                                                           });                 
                                                                         },
                                                                         child: Row(
@@ -408,7 +408,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                               fit: BoxFit.cover,
                                                               colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                                                               image: NetworkImage(
-                                                                courseData.data["coverImageUrl"]
+                                                                courseData.data()["coverImageUrl"]
                                                               )
                                                             )
                                                           ),
@@ -559,7 +559,7 @@ class _CourseScreenState extends State<CourseScreen> {
                 }
               }
             ) : FutureBuilder(
-              future: widget._documentReference.collection("Enrolled").getDocuments(),
+              future: widget._documentReference.collection("Enrolled").get(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                 if(snapshot.hasData){
                   switch (snapshot.connectionState) {
@@ -590,12 +590,12 @@ class _CourseScreenState extends State<CourseScreen> {
                       );
                       break;
                     default:
-                      return snapshot.data.documents.length > 0 ? Container(
+                      return snapshot.data.docs.length > 0 ? Container(
                         height: MediaQuery.of(context).size.height - 200,
                         child: ListView.builder(
-                          itemCount: snapshot.data.documents.length,
+                          itemCount: snapshot.data.docs.length,
                           itemBuilder: (BuildContext context,int index){
-                            DocumentReference docRef = snapshot.data.documents[index].data["course"];
+                            DocumentReference docRef = snapshot.data.docs[index].data()["course"];
                             return Column(
                               children: <Widget>[
                                 FutureBuilder(
@@ -615,7 +615,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment: CrossAxisAlignment.end,
                                             children: <Widget>[
-                                              snapshot.data.documents[index].data["completed"] ? 
+                                              snapshot.data.docs[index].data()["completed"] ? 
                                               Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(30),
@@ -673,7 +673,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   Text(
-                                                    courseData.data["title"],
+                                                    courseData.data()["title"],
                                                     style: GoogleFonts.poppins(
                                                       color: Colors.white,
                                                       fontSize: 25,
@@ -682,7 +682,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                     )
                                                   ),
                                                   Text(
-                                                    courseData.data["level"],
+                                                    courseData.data()["level"],
                                                     style: GoogleFonts.poppins(
                                                       color: Colors.white,
                                                       fontWeight: FontWeight.w400,
@@ -694,7 +694,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: <Widget>[
                                                       RatingBarIndicator(
-                                                        rating: courseData.data["ratings"].toDouble(),
+                                                        rating: courseData.data()["ratings"].toDouble(),
                                                         itemCount: 5,
                                                         itemSize: 17,
                                                         physics: BouncingScrollPhysics(),
@@ -722,7 +722,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                             ),
                                                             WidgetSpan(child: SizedBox(width:3)),
                                                             TextSpan(
-                                                              text: courseData.data["followers"].toString()
+                                                              text: courseData.data()["followers"].toString()
                                                             )
                                                           ]
                                                         )
@@ -736,7 +736,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                                               borderRadius: BorderRadius.circular(30)
                                                             ),
                                                             onPressed: (){
-                                                              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.documents[index].reference,courseData.data["title"])));
+                                                              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => CourseContentScreen(snapshot.data.docs[index].reference,courseData.data()["title"])));
                                                             },
                                                             child: Row(
                                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -781,7 +781,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                               fit: BoxFit.cover,
                                               colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                                               image: NetworkImage(
-                                                courseData.data["coverImageUrl"]
+                                                courseData.data()["coverImageUrl"]
                                               )
                                             )
                                           ),
@@ -964,7 +964,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                     currentAccountPicture: CircleAvatar(
                       backgroundColor: Colors.white,
-                      backgroundImage: NetworkImage(snapshot.data["imageUrl"]),
+                      backgroundImage: NetworkImage(snapshot.data.data()["imageUrl"]),
                       onBackgroundImageError: (dynamic d, StackTrace s){
                         Fluttertoast.showToast(
                           msg: 'Oops! Error loading Image',
@@ -975,7 +975,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       },
                     ),
                     accountName: Text(
-                      snapshot.data["name"],
+                      snapshot.data.data()["name"],
                       style: GoogleFonts.poppins(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -984,7 +984,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       )
                     ), 
                     accountEmail: Text(
-                      snapshot.data["email"],
+                      snapshot.data.data()["email"],
                       style:GoogleFonts.poppins(
                         fontSize: 12,
                         letterSpacing: 0.7,
